@@ -1,0 +1,1 @@
+ATTRS{idVendor}=="04c5", MODE="0666", GROUP="pi"

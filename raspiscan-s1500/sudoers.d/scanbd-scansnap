@@ -1,0 +1,1 @@
+saned ALL=(pi) NOPASSWD: /usr/local/bin/scansnap_to_nextcloud.sh

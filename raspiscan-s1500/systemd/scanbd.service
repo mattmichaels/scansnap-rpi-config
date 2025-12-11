@@ -1,0 +1,14 @@
+[Unit]
+Description=Scanner button events daemon (native unit)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/scanbd -f
+User=root
+Group=root
+Environment=SCANBD_DEBUG=0
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
