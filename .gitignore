@@ -1,0 +1,4 @@
+
+# secrets / local env files
+*.env
+scansnap.env
