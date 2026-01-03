@@ -1,29 +1,36 @@
-ScanSnap Raspberry Pi Configs
+# ScanSnap Raspberry Pi Configs
 
-This repository contains model-specific, headless Raspberry Pi configurations for running Fujitsu ScanSnap scanners without a PC, using:
+Headless, model-specific Raspberry Pi configurations for running Fujitsu ScanSnap scanners **without a PC**.
 
-SANE + scanbd for hardware button handling
+This repository provides known-good, reproducible setups using:
 
-Custom scan pipelines (TIFF → PDF → OCR)
+- **SANE + scanbd** for hardware scan button handling
+- **Custom scan pipelines** (TIFF → PDF → OCR)
+- **Automatic upload to Nextcloud** via WebDAV
+- **No secrets committed** (all credentials injected via `.env`)
 
-Automatic upload to Nextcloud via WebDAV
+**The goal is simple:**
 
-No secrets committed (everything injected via .env)
+> Insert paper → press Scan → PDF appears in Nextcloud
 
-The goal is simple:
+This repo acts as a **known-good reference** for rebuilding any ScanSnap Pi in minutes.
 
-Insert paper → press Scan → PDF appears in Nextcloud
+---
 
-This repo acts as a known-good reference for rebuilding any ScanSnap Pi in minutes.
+## Supported Scanners
 
-Supported Scanners
-Model	Folder	Status
-ScanSnap S1500	raspiscan-s1500/	✅ Working
-ScanSnap iX500	raspiscan-ix500/	✅ Working
+| Model | Folder | Status |
+|------|--------|--------|
+| ScanSnap S1500 | `raspiscan-s1500/` | ✅ Working |
+| ScanSnap iX500 | `raspiscan-ix500/` | ✅ Working |
 
-Each folder is self-contained and may differ slightly due to hardware and driver behavior.
+Each scanner folder is **self-contained** and may differ slightly due to hardware, firmware, or driver behavior.
 
-Architecture (High-Level)
+---
+
+## Architecture (High-Level)
+
+```text
 [ScanSnap Button]
         ↓
      scanbd
@@ -41,19 +48,24 @@ Architecture (High-Level)
  ocrmypdf (optional)
         ↓
  Nextcloud (WebDAV)
+```
 
+---
 
-Key design points:
+## Key Design Points
 
-scanbd runs as root
+- `scanbd` runs as **root** to listen for hardware button events
+- The actual scan workflow runs as user **pi**
+- Privilege separation is enforced via **sudoers**, not scripts
+- Secrets live in `/usr/local/etc/scansnap.env`
+- No credentials are ever committed to Git
+- Systems are designed to be **headless and unattended**
 
-The actual scan workflow runs as user pi
+---
 
-Secrets live in /usr/local/etc/scansnap.env
+## Repository Layout
 
-All configs are reproducible from this repo
-
-Repository Layout
+```text
 scansnap-rpi-config/
 ├── raspiscan-s1500/
 │   ├── etc-scanbd/
@@ -67,81 +79,91 @@ scansnap-rpi-config/
 │   └── README.md
 │
 └── .gitignore
-
+```
 
 Each scanner folder contains:
 
-scanbd.conf
+- `scanbd.conf`
+- scanbd trigger scripts
+- the full scan → PDF → upload workflow
+- example `.env` files (never real credentials)
+- exact deployment steps in its own `README.md`
 
-scanbd trigger scripts
+---
 
-the scan → PDF → upload workflow
-
-example .env (never real credentials)
-
-Secrets & Credentials
+## Secrets & Credentials
 
 Nothing sensitive is committed.
 
 Each Pi expects:
 
+```text
 /usr/local/etc/scansnap.env
+```
 
+Example (copy from `.env.example`):
 
-Example (copy from .env.example):
-
+```env
 NC_BASE_URL=https://nextcloud.example.com/remote.php/dav/files/USERNAME
 NC_TARGET_DIR=Scans
 NC_USER=USERNAME
 NC_PASS=APP_PASSWORD
-
+```
 
 Permissions are intentionally strict:
 
+```bash
 sudo chown root:root /usr/local/etc/scansnap.env
 sudo chmod 600 /usr/local/etc/scansnap.env
+```
 
-Deployment Philosophy
+---
 
-These systems are headless
+## Deployment Philosophy
 
-No GUI
+These systems are:
 
-No keyboard/mouse
+- Headless
+- No GUI
+- No keyboard or mouse
 
 Designed for:
 
-desks
+- Desks
+- Shared spaces
+- Family use
+- Offices
 
-shared spaces
+**Just press the button.**
 
-family use
+Each scanner folder documents exact rebuild steps so a Pi can be reimaged and restored in minutes.
 
-“just press the button”
+---
 
-Each scanner folder contains exact deployment steps in its own README.
+## Why This Exists
 
-Why This Exists
-
-ScanSnap hardware is excellent.
+ScanSnap hardware is excellent.  
 ScanSnap software is… not.
 
-This repo exists to:
+This repository exists to:
 
-Remove Windows/macOS dependency
+- Remove Windows/macOS dependency
+- Preserve button-based workflows
+- Enable reliable, long-term scanning
+- Make rebuilds painless
+- Keep documentation alongside configuration
 
-Preserve button-based workflows
+---
 
-Enable reliable, long-term scanning
+## Status
 
-Make rebuilds painless
+- Actively used
+- Proven on multiple Raspberry Pis
+- Designed to be boring, stable, and reliable
 
-Keep documentation with configuration
+---
 
-Status
+## License
 
-Actively used
-
-Proven on multiple Raspberry Pis
-
-Designed to be boring and reliable
+Provided as-is for personal and educational use.  
+No affiliation with Fujitsu.
